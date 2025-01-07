@@ -49,6 +49,7 @@ import {getDateForUnixTicks, makeIsEligibleForClick} from 'utils/utils';
 
 import type {PostPluginComponent, PluginComponent} from 'types/store/plugins';
 
+import {withPostErrorBoundary} from './post_error_boundary';
 import PostOptions from './post_options';
 import PostUserProfile from './user_profile';
 
@@ -119,7 +120,7 @@ export type Props = {
     pluginActions: PluginComponent[];
 };
 
-const PostComponent = (props: Props): JSX.Element => {
+function PostComponent(props: Props) {
     const {post, shouldHighlight, togglePostMenu} = props;
 
     const isSearchResultItem = (props.matches && props.matches.length > 0) || props.isMentionSearch || (props.term && props.term.length > 0);
@@ -305,6 +306,11 @@ const PostComponent = (props: Props): JSX.Element => {
     };
 
     const handleFileDropdownOpened = useCallback((open: boolean) => setFileDropdownOpened(open), []);
+
+    const [crash, setCrash] = useState(false);
+    if (crash) {
+        throw new Error('boats and boating');
+    }
 
     const handleDropdownOpened = useCallback((opened: boolean) => {
         if (togglePostMenu) {
@@ -664,9 +670,12 @@ const PostComponent = (props: Props): JSX.Element => {
                         </div>
                     </div>
                 </div>
+                <button onClick={() => setCrash(true)}>
+                    {'Crash'}
+                </button>
             </PostAriaLabelDiv>
         </>
     );
-};
+}
 
-export default PostComponent;
+export default withPostErrorBoundary(PostComponent);
